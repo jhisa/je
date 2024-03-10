@@ -1,0 +1,21 @@
+---
+- hosts: all
+  tasks:
+  - name: Install Docker
+    apt:
+      name: docker.io
+      state: present
+
+  - name: Build Docker image
+    docker_image:
+      name: mi_proyecto
+      source: .
+      pull: false
+
+  - name: Run Docker container
+    docker_container:
+      name: mi_proyecto
+      image: mi_proyecto
+      ports:
+        - "3000:3000"
+      state: started
