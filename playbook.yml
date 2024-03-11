@@ -1,21 +1,33 @@
 ---
 - hosts: all
+  become: yes
   tasks:
-  - name: Install Docker
-    apt:
-      name: docker.io
-      state: present
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
 
-  - name: Build Docker image
-    docker_image:
-      name: mi_proyecto
-      source: .
-      pull: false
+    - name: Stop and remove existing container
+      docker_container:
+        name: mi_proyecto
+        state: absent
 
-  - name: Run Docker container
-    docker_container:
-      name: mi_proyecto
-      image: mi_proyecto
-      ports:
-        - "3000:3000"
-      state: started
+    - name: Remove existing Docker image
+      docker_image:
+        name: mi_proyecto
+        state: absent
+
+    - name: Build Docker image
+      docker_image:
+        name: mi_proyecto
+        source: build
+        build:
+          path: .
+
+    - name: Run Docker container
+      docker_container:
+        name: mi_proyecto
+        image: mi_proyecto
+        ports:
+          - "3000:3000"
+        state: started
